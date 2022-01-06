@@ -8,5 +8,5 @@ server.use(express.json());
 server.use(express.static(path.join(__dirname, 'public')));
 
 server.use('/', (req, res) => {
-
+  res.send('hello');
 })
