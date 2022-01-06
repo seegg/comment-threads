@@ -10,7 +10,8 @@ const getCommentThread = (id, db = connection) => {
   //SELECT * FROM comment WHERE id = id AND order LIKE '%-id-%'
   return db('comment').
     where({ id }).
-    orWhere('order', 'like', `%-${id}-%`);
+    orWhere('order', 'like', `%-${id}-%`)
+    .select('id', 'parent_id', 'date', 'comment');
 };
 
 module.exports = {
