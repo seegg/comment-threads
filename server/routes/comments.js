@@ -10,7 +10,7 @@ router.get('/thread/:id', (req, res) => {
   db.getCommentThread(id)
     .then(result => {
       console.log('result', result);
-      res.json(result).send();
+      res.status(200).json(result);
       return;
     })
     .catch(err => {
@@ -23,7 +23,7 @@ router.get('/id/:id', (req, res) => {
   console.log('comment id', id)
   db.getComment(id)
     .then(result => {
-      res.status(200).json(result).send();
+      res.status(200).json(result)
       return;
     })
     .catch(err => {
