@@ -8,13 +8,30 @@ function getComment (id, db = connection) {
 //get a comment and it's replies.
 const getCommentThread = (id, db = connection) => {
   //SELECT * FROM comment WHERE id = id AND order LIKE '%-id-%'
-  return db('comment').
-    where({ id }).
-    orWhere('order', 'like', `%-${id}-%`)
-    .select('id', 'parent_id', 'date', 'comment');
+  return db('comment')
+    .where({ id })
+    .orWhere('order', 'like', `%-${id}-%`)
 };
+
+const addComment = (comment, db = connection) => {
+  return db('comment')
+    .insert(comment);
+}
+
+/**
+ * Set the content of the comment to '[deleted]'
+ * or alternatively have a flag to indicate whether a comment is deleted or not
+ * while keepign the original comment intact.
+ */
+const deleteComment = (id, db = connection) => {
+  return db('comment')
+    .update({ comment: '[deleted]' })
+    .where('id', id);
+}
 
 module.exports = {
   getComment,
-  getCommentThread
+  getCommentThread,
+  addComment,
+  deleteComment
 };

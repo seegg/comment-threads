@@ -9,8 +9,8 @@ router.get('/thread/:id', (req, res) => {
   console.log('thread', id);
   db.getCommentThread(id)
     .then(result => {
-      console.log('result', result);
-      res.status(200).json(result);
+      //pick specific properties to send.
+      res.status(200).json(result.map(({ id, date, parent_id, comment }) => ({ id, date, parent_id, comment })));
       return;
     })
     .catch(err => {
@@ -23,10 +23,40 @@ router.get('/id/:id', (req, res) => {
   console.log('comment id', id)
   db.getComment(id)
     .then(result => {
-      res.status(200).json(result)
+      res.status(200).json(result);
       return;
     })
     .catch(err => {
       console.error(err);
     });
 });
+
+router.post('/', (req, res) => {
+  let comment = req.body;
+  if (comment.parent_id) {
+    db.getComment(comment.parent_id)
+      .then(({ order }) => {
+        comment.order = order + `${comment.parent_id}-`
+        return comment;
+      })
+      .then(result => {
+        return db.addComment(result);
+      })
+      .then(_ => {
+        res.status(201).send();
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(422).send();
+      });
+  } else {
+    db.addComment(comment)
+      .then(_ => {
+        res.status(201).send();
+      })
+      .catch(err => {
+        console.error(err);
+        res.status(422).send();
+      })
+  }
+})
