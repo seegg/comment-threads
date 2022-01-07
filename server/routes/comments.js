@@ -4,6 +4,9 @@ const db = require('../db/commentDB');
 const router = express.Router();
 module.exports = router;
 
+/**
+ * Get comment chain.
+ */
 router.get('/thread/:id', (req, res) => {
   const id = req.params.id;
   console.log('thread', id);
@@ -18,6 +21,9 @@ router.get('/thread/:id', (req, res) => {
     })
 });
 
+/**
+ * Get a specific comment.
+ */
 router.get('/id/:id', (req, res) => {
   const id = Number(req.params.id);
   console.log('comment id', id)
@@ -31,12 +37,17 @@ router.get('/id/:id', (req, res) => {
     });
 });
 
+
+/**
+ * Add a comment, either as a new thread or a reply to an existing comment.
+ */
 router.post('/', (req, res) => {
   let comment = req.body;
+  comment.date = new Date().getTime();
   if (comment.parent_id) {
-    db.getComment(comment.parent_id)
-      .then(({ order }) => {
-        comment.order = order + `${comment.parent_id}-`
+    db.getComment(Number(comment.parent_id))
+      .then(([{ order }]) => {
+        comment.order = order ? order + `${comment.parent_id}-` : `-${comment.parent_id}-`;
         return comment;
       })
       .then(result => {
